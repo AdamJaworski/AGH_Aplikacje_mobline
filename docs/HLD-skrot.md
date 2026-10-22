@@ -43,7 +43,7 @@ flowchart LR
 | Pakiet | Zawartość |
 | --- | --- |
 | `ui/` | Ekrany Compose (4 zakładki + 2 arkusze) z ViewModelami, Navigation Compose |
-| `data/` | Room: `Task` (+ `Subtask`), `Note`, `Place` (+ `TaskPlace`), DAO, `TaskRepository` · `SettingsStore` (DataStore: cisza nocna, promień, wyprzedzenie) |
+| `data/` | Room: `Task` (podzadania przez `parentId`), `Note`, `Place` (+ `TaskPlace`), DAO, `TaskRepository` · `SettingsStore` (DataStore: cisza nocna, promień, wyprzedzenie) |
 | `location/` | `GeofenceHelper` (dodaj/usuń strefy), `GeofenceReceiver`, `PlacesApi` (Overpass) |
 | `reminders/` | `AlarmScheduler` (przypomnienia czasowe), `AlarmReceiver`, `BootReceiver`, `Notifications` |
 | `ai/` | `AiClient` – jedno zapytanie do LLM zwracające JSON z podzadaniami i kategorią miejsca |
