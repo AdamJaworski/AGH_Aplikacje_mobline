@@ -2,34 +2,33 @@ package com.example.apkmoblineprojekt.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Tła i powierzchnie
-val BgWarmOffWhite = Color(0xFFF7F6F2)
-val SurfaceWhite = Color(0xFFFFFFFF)
-val SurfacePillGray = Color(0xFFEDEDEA)
-val BorderLight = Color(0xFFE6E5E0)
+/** Paleta z makiety (figma/src/index.css). */
+object BliskoColors {
+    val Ink = Color(0xFF1F2825)
+    val Muted = Color(0xFF737C77)
+    val Surface = Color(0xFFF7F6F1)
+    val Card = Color(0xFFFFFFFF)
+    val Line = Color(0xFFE7E7E0)
+    val Coral = Color(0xFFE6694B)
+    val CoralSoft = Color(0xFFEF9D86)
+    val CoralTint = Color(0xFFFFF0E9)
+    val Forest = Color(0xFF24483D)
+    val Blue = Color(0xFF5B75B9)
+    val Green = Color(0xFF5C9272)
+    val Good = Color(0xFF43805F)
 
-// Główne kolory marki
-val ForestGreen = Color(0xFF204237)
-val ForestGreenLight = Color(0xFFEAF0ED)
-val MutedSageButton = Color(0xFF8C9E95)
-
-// Akcenty (Koralowy, Niebieski, Zielony)
-val AccentCoral = Color(0xFFE26346)
-val AccentCoralSoft = Color(0xFFFDF3F0)
-val AccentCoralIconBg = Color(0xFFFAE5DF).let { Color(0xFFFAE5DF) }
-val AccentCoralBorder = Color(0xFFF5D0C5)
-
-val AccentBlue = Color(0xFF5369B4)
-val AccentBlueSoft = Color(0xFFEEF1F9)
-
-val AccentGreenPin = Color(0xFF3A7B5E)
-
-// Teksty
-val TextPrimary = Color(0xFF191C1A)
-val TextSecondary = Color(0xFF787B78)
-val TextPlaceholder = Color(0xFF9E9E9B)
-
-// Mapa (Mock)
-val MapBackground = Color(0xFFE5E6DF)
-val MapGridLine = Color(0xFFDADBD4)
-val MapRoadWhite = Color(0xFFFFFFFF)
+    val IconTint = Color(0xFFEFF1ED)
+    val Segment = Color(0xFFF0F0EB)
+    val NavBar = Color(0xFFFBFAF7)
+    val NavInactive = Color(0xFF8B928E)
+    val Chevron = Color(0xFFB1B6B2)
+    val Faint = Color(0xFF9AA09C)
+    val Label = Color(0xFF89908C)
+    val BodyText = Color(0xFF626B66)
+    val MetaText = Color(0xFF555E59)
+    val Map = Color(0xFFE5E7DC)
+    val MapGrid = Color(0xFFD4D9CF)
+    val MapRoadEdge = Color(0xFFD9DCD3)
+    val Badge = Color(0xFFEDF1ED)
+    val Dashed = Color(0xFFBDC4BF)
+}
