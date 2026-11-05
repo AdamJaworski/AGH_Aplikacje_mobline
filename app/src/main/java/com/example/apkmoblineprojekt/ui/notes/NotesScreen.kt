@@ -1,194 +1,195 @@
 package com.example.apkmoblineprojekt.ui.notes
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.outlined.LocationOn
-import androidx.compose.material3.*
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.PushPin
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.apkmoblineprojekt.data.MockData
-import com.example.apkmoblineprojekt.data.NoteFilter
-import com.example.apkmoblineprojekt.data.NoteUi
-import com.example.apkmoblineprojekt.ui.components.AppSearchBar
-import com.example.apkmoblineprojekt.ui.components.CircularIconActionButton
-import com.example.apkmoblineprojekt.ui.components.ScreenTopHeader
-import com.example.apkmoblineprojekt.ui.theme.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.apkmoblineprojekt.R
+import com.example.apkmoblineprojekt.data.SampleData
+import com.example.apkmoblineprojekt.data.model.Note
+import com.example.apkmoblineprojekt.ui.components.CircleIconButton
+import com.example.apkmoblineprojekt.ui.components.PillChip
+import com.example.apkmoblineprojekt.ui.components.ScreenHeader
+import com.example.apkmoblineprojekt.ui.components.SearchField
+import com.example.apkmoblineprojekt.ui.theme.BliskoColors
+import com.example.apkmoblineprojekt.ui.theme.BliskoText
+import com.example.apkmoblineprojekt.ui.theme.BliskoTheme
+import com.example.apkmoblineprojekt.ui.util.appViewModel
+import com.example.apkmoblineprojekt.ui.util.dayMonth
+import com.example.apkmoblineprojekt.ui.util.hhmm
+import java.time.LocalDate
+
+/**
+ * [onAddNote] / [onOpenNote] – edytor notatki nie jest jeszcze w makiecie; do podpięcia
+ * jako kolejny cel nawigacji.
+ */
+@Composable
+fun NotesRoute(onAddNote: () -> Unit, onOpenNote: (Note) -> Unit) {
+    val viewModel = appViewModel { NotesViewModel(it.noteRepository) }
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    NotesScreen(
+        state = state,
+        onQueryChange = viewModel::onQueryChange,
+        onFilterChange = viewModel::onFilterChange,
+        onAddNote = onAddNote,
+        onOpenNote = onOpenNote,
+        onTogglePinned = viewModel::togglePinned,
+    )
+}
 
 @Composable
 fun NotesScreen(
-    searchQuery: String,
-    onSearchQueryChange: (String) -> Unit,
-    selectedFilter: NoteFilter,
-    onFilterSelect: (NoteFilter) -> Unit,
-    notes: List<NoteUi>,
-    onAddNoteClick: () -> Unit,
-    onNoteClick: (NoteUi) -> Unit,
-    modifier: Modifier = Modifier
+    state: NotesUiState,
+    onQueryChange: (String) -> Unit,
+    onFilterChange: (NotesFilter) -> Unit,
+    onAddNote: () -> Unit,
+    onOpenNote: (Note) -> Unit,
+    onTogglePinned: (Note) -> Unit,
 ) {
     LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp),
-        contentPadding = PaddingValues(bottom = 28.dp)
+        Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(start = 19.dp, end = 19.dp, top = 25.dp, bottom = 32.dp),
+        verticalArrangement = Arrangement.spacedBy(9.dp),
     ) {
         item {
-            ScreenTopHeader(
-                overlineText = "TWOJE ZAPISKI",
-                title = "Notatki",
-                actionButton = {
-                    CircularIconActionButton(
-                        icon = Icons.Default.Add,
-                        contentDescription = "Dodaj notatkę",
-                        onClick = onAddNoteClick,
-                        containerColor = ForestGreen,
-                        contentColor = Color.White,
-                        hasBorder = false
-                    )
-                }
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            AppSearchBar(
-                query = searchQuery,
-                onQueryChange = onSearchQueryChange,
-                placeholder = "Szukaj w notatkach"
-            )
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            // Chipy filtrów: Wszystkie | Przypięte | Powiązane
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                NoteFilter.entries.forEach { filter ->
-                    val isSelected = filter == selectedFilter
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(14.dp))
-                            .background(if (isSelected) ForestGreen else MaterialTheme.colorScheme.surface)
-                            .border(
-                                width = 1.dp,
-                                color = if (isSelected) ForestGreen else MaterialTheme.colorScheme.outline,
-                                shape = RoundedCornerShape(14.dp)
-                            )
-                            .clickable { onFilterSelect(filter) }
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                    ) {
-                        Text(
-                            text = filter.label,
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = if (isSelected) Color.White else TextSecondary
-                        )
+            ScreenHeader(
+                eyebrow = stringResource(R.string.notes_eyebrow),
+                title = stringResource(R.string.notes_title),
+            ) {
+                CircleIconButton(Icons.Outlined.Add, stringResource(R.string.cd_add_note), onAddNote, filled = true)
+            }
+        }
+        item {
+            Column {
+                SearchField(state.query, onQueryChange, stringResource(R.string.notes_search_placeholder))
+                Row(
+                    Modifier.padding(top = 13.dp, bottom = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(7.dp),
+                ) {
+                    listOf(
+                        NotesFilter.ALL to R.string.notes_filter_all,
+                        NotesFilter.PINNED to R.string.notes_filter_pinned,
+                        NotesFilter.LINKED to R.string.notes_filter_linked,
+                    ).forEach { (filter, label) ->
+                        PillChip(stringResource(label), state.filter == filter, { onFilterChange(filter) })
                     }
                 }
             }
-
-            Spacer(modifier = Modifier.height(18.dp))
         }
+        if (state.notes.isEmpty()) {
+            item {
+                Text(
+                    stringResource(R.string.notes_empty),
+                    Modifier.padding(horizontal = 2.dp),
+                    style = BliskoText.Caption,
+                )
+            }
+        }
+        items(state.notes, key = { it.id }) { note ->
+            NoteCard(note, onClick = { onOpenNote(note) }, onLongClick = { onTogglePinned(note) })
+        }
+    }
+}
 
-        items(notes, key = { it.id }) { note ->
-            NoteCardItem(
-                note = note,
-                onClick = { onNoteClick(note) }
-            )
-            Spacer(modifier = Modifier.height(14.dp))
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun NoteCard(note: Note, onClick: () -> Unit, onLongClick: () -> Unit) {
+    val shape = RoundedCornerShape(19.dp)
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(BliskoColors.Card)
+            .border(1.dp, BliskoColors.Line, shape)
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick,
+                onLongClickLabel = stringResource(
+                    if (note.pinned) R.string.cd_unpin_note else R.string.cd_pin_note,
+                ),
+            ),
+    ) {
+        Column(Modifier.padding(19.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(note.title, Modifier.weight(1f), style = BliskoText.NoteTitle)
+                if (note.pinned) {
+                    Icon(
+                        Icons.Outlined.PushPin,
+                        stringResource(R.string.cd_pinned),
+                        Modifier.size(17.dp),
+                        tint = BliskoColors.Coral,
+                    )
+                }
+            }
+            Text(note.content, Modifier.padding(top = 9.dp, bottom = 14.dp), style = BliskoText.Body)
+            Text(noteMeta(note), style = BliskoText.Small.copy(color = BliskoColors.Faint))
+        }
+        if (note.pinned) {
+            Box(
+                Modifier
+                    .matchParentSize(),
+            ) {
+                Box(
+                    Modifier
+                        .width(3.dp)
+                        .fillMaxHeight()
+                        .background(BliskoColors.Coral),
+                )
+            }
         }
     }
 }
 
 @Composable
-fun NoteCardItem(
-    note: NoteUi,
-    onClick: () -> Unit
-) {
-    Surface(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(22.dp),
-        color = MaterialTheme.colorScheme.surface,
-        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
-    ) {
-        Row(modifier = Modifier.fillMaxWidth()) {
-            if (note.isPinnedWithLocation) {
-                Box(
-                    modifier = Modifier
-                        .width(5.dp)
-                        .heightIn(min = 136.dp)
-                        .background(AccentCoral)
-                )
-            }
-
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(18.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = note.title,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    if (note.isPinnedWithLocation) {
-                        Icon(
-                            imageVector = Icons.Outlined.LocationOn,
-                            contentDescription = "Przypięta lokalizacja",
-                            tint = AccentCoral,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = note.content,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = TextSecondary
-                )
-
-                Spacer(modifier = Modifier.height(14.dp))
-
-                Text(
-                    text = note.footerText,
-                    fontSize = 12.sp,
-                    color = TextPlaceholder
-                )
-            }
-        }
+private fun noteMeta(note: Note): String {
+    val today = LocalDate.now()
+    val date = note.updatedAt.toLocalDate()
+    val day = when (date) {
+        today -> stringResource(R.string.date_today)
+        today.minusDays(1) -> stringResource(R.string.date_yesterday)
+        else -> date.dayMonth()
     }
+    val detail = if (note.taskId != null) {
+        stringResource(R.string.notes_linked_to_task)
+    } else {
+        note.updatedAt.toLocalTime().hhmm()
+    }
+    return "$day · $detail"
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFFF7F6F1, widthDp = 412, heightDp = 760)
 @Composable
 private fun NotesScreenPreview() {
-    GeoPlanerTheme {
-        NotesScreen(
-            searchQuery = "",
-            onSearchQueryChange = {},
-            selectedFilter = NoteFilter.ALL,
-            onFilterSelect = {},
-            notes = MockData.notes,
-            onAddNoteClick = {},
-            onNoteClick = {}
-        )
+    BliskoTheme {
+        NotesScreen(NotesUiState(notes = SampleData.notes()), {}, {}, {}, {}, {})
     }
 }

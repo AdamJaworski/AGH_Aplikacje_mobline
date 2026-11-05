@@ -1,6 +1,169 @@
 <resources>
-    <string name="app_name">apk mobline projekt</string>
-    <string name="hello_world">Hello, %1$s!</string>
-    <string name="tile_label">Example tile</string>
-    <string name="complication_label">Example complication</string>
+    <string name="app_name">Blisko</string>
+
+    <!-- Wspólne -->
+    <string name="action_add">Dodaj</string>
+    <string name="action_cancel">Anuluj</string>
+    <string name="action_close">Zamknij</string>
+    <string name="action_done">Gotowe</string>
+    <string name="action_ok">OK</string>
+    <string name="action_save">Zapisz</string>
+    <string name="date_today">Dzisiaj</string>
+    <string name="date_yesterday">Wczoraj</string>
+    <string name="minutes_short">%d min</string>
+
+    <!-- Nawigacja -->
+    <string name="nav_calendar">Kalendarz</string>
+    <string name="nav_notes">Notatki</string>
+    <string name="nav_places">Miejsca</string>
+    <string name="nav_settings">Ustawienia</string>
+
+    <!-- Kalendarz -->
+    <string name="calendar_mode_week_short">T</string>
+    <string name="calendar_mode_month_short">M</string>
+    <string name="calendar_today">DZISIAJ</string>
+    <string name="calendar_todo">Do zrobienia</string>
+    <string name="calendar_new_task">Nowe zadanie</string>
+    <string name="calendar_empty_day">Brak zadań na ten dzień.</string>
+    <string name="calendar_event_all_day">Cały dzień</string>
+    <string name="calendar_event_untitled">(bez tytułu)</string>
+    <string name="calendar_connect_title">Połącz z kalendarzem telefonu</string>
+    <string name="calendar_connect_body">Zobaczysz tu swoje wydarzenia, a zadania z terminem trafią do kalendarza w telefonie.</string>
+    <string name="calendar_connect_action">Połącz</string>
+    <string name="calendar_connect_later">Nie teraz</string>
+    <string name="tasks_one">%d zadanie</string>
+    <string name="tasks_few">%d zadania</string>
+    <string name="tasks_many">%d zadań</string>
+
+    <!-- Edycja zadania -->
+    <string name="editor_title_new">Nowe zadanie</string>
+    <string name="editor_title_edit">Edytuj zadanie</string>
+    <string name="editor_title_placeholder">Nazwa zadania</string>
+    <string name="editor_description_placeholder">Dodaj opis</string>
+    <string name="editor_ai_title">Podpowiedz z AI</string>
+    <string name="editor_ai_subtitle">Podzadania i najlepsze miejsce</string>
+    <string name="editor_ai_ready_title">Propozycja gotowa</string>
+    <string name="editor_ai_failed_title">Brak propozycji</string>
+    <string name="editor_ai_failed_message">Nie udało się połączyć z AI. Spróbuj ponownie.</string>
+    <string name="editor_ai_nothing_new">AI nie ma nowych propozycji.</string>
+    <string name="editor_ai_only_subtasks">%1$s.</string>
+    <string name="editor_ai_only_place">Ustawiono %1$s.</string>
+    <string name="editor_ai_subtasks_and_place">%1$s i %2$s.</string>
+    <string name="editor_ai_category">kategorię „%1$s”</string>
+    <string name="editor_ai_place">miejsce „%1$s”</string>
+    <string name="ai_subtasks_one">Dodano %d podzadanie</string>
+    <string name="ai_subtasks_few">Dodano %d podzadania</string>
+    <string name="ai_subtasks_many">Dodano %d podzadań</string>
+    <string name="editor_section_when">KIEDY</string>
+    <string name="editor_section_where">GDZIE</string>
+    <string name="editor_section_subtasks">PODZADANIA</string>
+    <string name="editor_date">Data</string>
+    <string name="editor_time">Godzina</string>
+    <string name="editor_reminder">Przypomnienie</string>
+    <string name="editor_no_date">Bez daty</string>
+    <string name="editor_no_time">Bez godziny</string>
+    <string name="editor_reminder_needs_time">Ustaw godzinę</string>
+    <string name="editor_pick_place">Wybierz miejsce</string>
+    <string name="editor_place_optional">Opcjonalnie – przypomnę, gdy będziesz w pobliżu</string>
+    <string name="editor_place_radius">%d m od lokalizacji</string>
+    <string name="editor_subtask_placeholder">Nowe podzadanie</string>
+    <string name="editor_no_subtasks">Brak podzadań – dodaj je ręcznie albo poproś AI.</string>
+    <string name="editor_delete">Usuń zadanie</string>
+
+    <!-- Przypomnienia -->
+    <string name="reminder_none">Brak</string>
+    <string name="reminder_on_time">O czasie</string>
+    <string name="reminder_minutes_before">%d min wcześniej</string>
+    <string name="reminder_hours_before">%d godz. wcześniej</string>
+
+    <!-- Wybór miejsca -->
+    <string name="picker_title">Wybierz miejsce</string>
+    <string name="picker_search_placeholder">Adres lub nazwa miejsca</string>
+    <string name="picker_nearby">W pobliżu</string>
+    <string name="picker_searching">Szukam…</string>
+    <string name="picker_empty">Wybierz kategorię albo wpisz nazwę miejsca.</string>
+    <string name="picker_open_until">Otwarte do %1$s</string>
+    <string name="picker_open_always">Otwarte całą dobę</string>
+    <string name="picker_hours_unknown">Godziny otwarcia nieznane</string>
+    <string name="results_one">%d wynik</string>
+    <string name="results_few">%d wyniki</string>
+    <string name="results_many">%d wyników</string>
+
+    <!-- Kategorie miejsc -->
+    <string name="category_grocery">Sklep spożywczy</string>
+    <string name="category_grocery_short">Sklep</string>
+    <string name="category_pharmacy">Apteka</string>
+    <string name="category_parcel_locker">Paczkomat</string>
+    <string name="category_hardware_store">Sklep budowlany</string>
+    <string name="category_hardware_store_short">Budowlany</string>
+    <string name="category_post_office">Poczta</string>
+    <string name="category_atm">Bankomat</string>
+    <string name="category_other">Inne</string>
+
+    <!-- Notatki -->
+    <string name="notes_eyebrow">TWOJE ZAPISKI</string>
+    <string name="notes_title">Notatki</string>
+    <string name="notes_search_placeholder">Szukaj w notatkach</string>
+    <string name="notes_filter_all">Wszystkie</string>
+    <string name="notes_filter_pinned">Przypięte</string>
+    <string name="notes_filter_linked">Powiązane</string>
+    <string name="notes_linked_to_task">Powiązana z zadaniem</string>
+    <string name="notes_empty">Brak notatek.</string>
+
+    <!-- Miejsca -->
+    <string name="places_eyebrow">TWOJA MAPA</string>
+    <string name="places_title">Miejsca</string>
+    <string name="places_saved">Zapisane miejsca</string>
+    <string name="places_add_new">Dodaj nowe miejsce</string>
+    <string name="places_no_address">Brak adresu</string>
+    <string name="places_one">%d miejsce</string>
+    <string name="places_few">%d miejsca</string>
+    <string name="places_many">%d miejsc</string>
+
+    <!-- Ustawienia -->
+    <string name="settings_eyebrow">PREFERENCJE</string>
+    <string name="settings_title">Ustawienia</string>
+    <string name="settings_status_ok_eyebrow">WSZYSTKO GOTOWE</string>
+    <string name="settings_status_ok_title">Przypomnienia działają</string>
+    <string name="settings_status_ok_body">Powiadomimy Cię we właściwym czasie i miejscu.</string>
+    <string name="settings_status_warn_eyebrow">WYMAGA UWAGI</string>
+    <string name="settings_status_warn_title">Przypomnienia są ograniczone</string>
+    <string name="settings_status_warn_body">Bez powiadomień i lokalizacji „Zawsze” nie przypomnimy Ci o zadaniu w pobliżu miejsca.</string>
+    <string name="settings_permissions">Uprawnienia</string>
+    <string name="settings_notifications">Powiadomienia</string>
+    <string name="settings_enabled">Włączone</string>
+    <string name="settings_disabled">Wyłączone</string>
+    <string name="settings_location">Lokalizacja</string>
+    <string name="settings_location_always">Zawsze</string>
+    <string name="settings_location_in_use">Podczas używania</string>
+    <string name="settings_location_none">Brak dostępu</string>
+    <string name="settings_calendar_permission">Kalendarz</string>
+    <string name="settings_calendar">Kalendarz telefonu</string>
+    <string name="settings_calendar_sync">Synchronizacja</string>
+    <string name="settings_calendar_sync_body">Zadania z terminem ↔ wydarzenia w telefonie</string>
+    <string name="settings_calendar_target">Zapisuj do</string>
+    <string name="settings_calendar_default">Główny kalendarz</string>
+    <string name="settings_calendar_google">Kalendarz Google</string>
+    <string name="settings_reminders">Przypomnienia</string>
+    <string name="settings_quiet_hours">Cisza nocna</string>
+    <string name="settings_default_radius">Domyślny promień</string>
+    <string name="settings_default_remind">Domyślne wyprzedzenie</string>
+    <string name="settings_footnote">Lokalizacja jest sprawdzana energooszczędnie. Dane o Twoim położeniu zostają na urządzeniu.</string>
+
+    <!-- Opisy dostępności -->
+    <string name="cd_menu">Menu</string>
+    <string name="cd_previous_week">Poprzedni tydzień</string>
+    <string name="cd_next_week">Następny tydzień</string>
+    <string name="cd_previous_month">Poprzedni miesiąc</string>
+    <string name="cd_next_month">Następny miesiąc</string>
+    <string name="cd_task_mark_done">Oznacz %1$s jako zrobione</string>
+    <string name="cd_task_restore">Przywróć %1$s</string>
+    <string name="cd_clear_place">Usuń miejsce</string>
+    <string name="cd_remove_subtask">Usuń podzadanie</string>
+    <string name="cd_locate_me">Pokaż moją lokalizację</string>
+    <string name="cd_add_note">Dodaj notatkę</string>
+    <string name="cd_add_place">Dodaj miejsce</string>
+    <string name="cd_pinned">Przypięta</string>
+    <string name="cd_pin_note">Przypnij</string>
+    <string name="cd_unpin_note">Odepnij</string>
 </resources>
