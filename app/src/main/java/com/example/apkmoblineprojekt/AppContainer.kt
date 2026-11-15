@@ -16,6 +16,7 @@ import com.example.apkmoblineprojekt.data.SampleData
 import com.example.apkmoblineprojekt.data.SettingsRepository
 import com.example.apkmoblineprojekt.data.SharedPrefsDeletedEventStore
 import com.example.apkmoblineprojekt.data.TaskRepository
+import com.example.apkmoblineprojekt.location.GeocodingRepository
 import com.example.apkmoblineprojekt.system.AndroidDeviceCalendar
 import com.example.apkmoblineprojekt.system.AndroidPermissionChecker
 import com.example.apkmoblineprojekt.system.DeviceCalendar
@@ -49,6 +50,7 @@ class AppContainer(context: Context) {
     val noteRepository: NoteRepository = InMemoryNoteRepository(SampleData.notes())
     val placeRepository: PlaceRepository = InMemoryPlaceRepository(SampleData.places())
     val placeSearchRepository: PlaceSearchRepository = FakePlaceSearchRepository()
+    val geocodingRepository = GeocodingRepository(context.applicationContext)
     val aiAssistant: AiAssistant = FakeAiAssistant()
     val permissionChecker: PermissionChecker = AndroidPermissionChecker(context.applicationContext)
 }

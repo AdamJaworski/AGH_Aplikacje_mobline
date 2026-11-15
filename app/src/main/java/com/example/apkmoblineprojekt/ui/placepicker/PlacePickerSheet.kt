@@ -27,6 +27,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -87,7 +88,7 @@ fun PlacePickerSheet(
     onConfirm: (TaskLocation) -> Unit,
 ) {
     val viewModel = appViewModel(key = "placePicker") {
-        PlacePickerViewModel(it.placeSearchRepository, it.settingsRepository)
+        PlacePickerViewModel(it.placeSearchRepository, it.settingsRepository, it.geocodingRepository)
     }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) { viewModel.start(initial) }
@@ -117,6 +118,7 @@ fun PlacePickerSheet(
             onClose = { hideThen(onDismiss) },
             onDone = { state.selection?.let { selection -> hideThen { onConfirm(selection) } } },
             onQueryChange = viewModel::onQueryChange,
+            onSubmitQuery = viewModel::submitQuery,
             onSelectCategory = viewModel::selectCategory,
             onSelectNearby = viewModel::selectNearby,
             onLocateMe = viewModel::locateMe,
@@ -130,6 +132,7 @@ fun PlacePickerContent(
     onClose: () -> Unit,
     onDone: () -> Unit,
     onQueryChange: (String) -> Unit,
+    onSubmitQuery: () -> Unit,
     onSelectCategory: (PlaceCategory) -> Unit,
     onSelectNearby: (NearbyPlace) -> Unit,
     onLocateMe: () -> Unit,
@@ -155,7 +158,13 @@ fun PlacePickerContent(
                 .verticalScroll(rememberScrollState())
                 .padding(start = 19.dp, end = 19.dp, top = 18.dp, bottom = 42.dp),
         ) {
-            SearchField(state.query, onQueryChange, stringResource(R.string.picker_search_placeholder))
+            SearchField(
+                state.query,
+                onQueryChange,
+                stringResource(R.string.picker_search_placeholder),
+                onSearch = onSubmitQuery,
+            )
+            GeocodeStatus(state)
             PickerMap(state, onLocateMe)
             CategoryRow(state, onSelectCategory)
             SectionHeading(
@@ -181,6 +190,30 @@ fun PlacePickerContent(
                 }
             }
         }
+    }
+}
+
+/** Stan geokodowania wpisanego adresu: pasek postępu, błąd albo znaleziony adres. */
+@Composable
+private fun GeocodeStatus(state: PlacePickerUiState) {
+    val resolvedAddress = state.selection?.takeIf { it.type == LocationType.POINT }?.address
+    when {
+        state.geocoding -> LinearProgressIndicator(
+            Modifier
+                .padding(top = 8.dp)
+                .fillMaxWidth(),
+            color = BliskoColors.Forest,
+        )
+        state.geocodeFailed -> Text(
+            stringResource(R.string.picker_geocode_not_found),
+            Modifier.padding(top = 8.dp, start = 2.dp),
+            style = BliskoText.Small.copy(color = BliskoColors.Coral),
+        )
+        resolvedAddress != null -> Text(
+            stringResource(R.string.picker_geocode_selected, resolvedAddress),
+            Modifier.padding(top = 8.dp, start = 2.dp),
+            style = BliskoText.Small,
+        )
     }
 }
 

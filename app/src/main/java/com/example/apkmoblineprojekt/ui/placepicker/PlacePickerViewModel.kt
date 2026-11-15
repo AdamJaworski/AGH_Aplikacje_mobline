@@ -9,6 +9,7 @@ import com.example.apkmoblineprojekt.data.model.LocationType
 import com.example.apkmoblineprojekt.data.model.NearbyPlace
 import com.example.apkmoblineprojekt.data.model.PlaceCategory
 import com.example.apkmoblineprojekt.data.model.TaskLocation
+import com.example.apkmoblineprojekt.location.GeocodingRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,20 +26,26 @@ data class PlacePickerUiState(
     val searching: Boolean = false,
     val selection: TaskLocation? = null,
     val radiusMeters: Int = DEFAULT_RADIUS_METERS,
+    /** Trwa geokodowanie wpisanego adresu (Enter / „Szukaj” na klawiaturze). */
+    val geocoding: Boolean = false,
+    val geocodeFailed: Boolean = false,
 )
 
 class PlacePickerViewModel(
     private val placeSearchRepository: PlaceSearchRepository,
     private val settingsRepository: SettingsRepository,
+    private val geocodingRepository: GeocodingRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PlacePickerUiState())
     val uiState: StateFlow<PlacePickerUiState> = _uiState.asStateFlow()
 
     private var searchJob: Job? = null
+    private var geocodeJob: Job? = null
 
     /** Wywoływane przy każdym otwarciu arkusza. */
     fun start(initial: TaskLocation?) {
+        geocodeJob?.cancel()
         viewModelScope.launch {
             val radius = initial?.radiusMeters ?: settingsRepository.settings.first().defaultRadiusMeters
             _uiState.value = PlacePickerUiState(
@@ -51,8 +58,35 @@ class PlacePickerViewModel(
     }
 
     fun onQueryChange(query: String) {
-        _uiState.update { it.copy(query = query) }
+        _uiState.update { it.copy(query = query, geocodeFailed = false) }
         search(debounce = true)
+    }
+
+    /** Zamienia wpisany adres na współrzędne i ustawia go jako wybrany punkt. */
+    fun submitQuery() {
+        val query = _uiState.value.query.trim()
+        if (query.isEmpty() || _uiState.value.geocoding) return
+        geocodeJob = viewModelScope.launch {
+            _uiState.update { it.copy(geocoding = true, geocodeFailed = false) }
+            val result = geocodingRepository.geocode(query)
+            _uiState.update { state ->
+                if (result == null) {
+                    state.copy(geocoding = false, geocodeFailed = true)
+                } else {
+                    state.copy(
+                        geocoding = false,
+                        selection = TaskLocation(
+                            LocationType.POINT,
+                            name = query,
+                            radiusMeters = state.radiusMeters,
+                            address = result.address,
+                            latitude = result.lat,
+                            longitude = result.lng,
+                        ),
+                    )
+                }
+            }
+        }
     }
 
     fun selectCategory(category: PlaceCategory) {
@@ -73,6 +107,8 @@ class PlacePickerViewModel(
                     name = place.name,
                     category = place.category,
                     radiusMeters = it.radiusMeters,
+                    latitude = place.latitude,
+                    longitude = place.longitude,
                 ),
             )
         }

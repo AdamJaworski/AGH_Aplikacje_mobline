@@ -19,6 +19,8 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Search
@@ -44,6 +46,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -157,6 +160,7 @@ fun SearchField(
     onValueChange: (String) -> Unit,
     placeholder: String,
     modifier: Modifier = Modifier,
+    onSearch: (() -> Unit)? = null,
 ) {
     val shape = RoundedCornerShape(15.dp)
     Row(
@@ -175,6 +179,10 @@ fun SearchField(
             value = value,
             onValueChange = onValueChange,
             singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                imeAction = if (onSearch != null) ImeAction.Search else ImeAction.Default,
+            ),
+            keyboardActions = KeyboardActions(onSearch = { onSearch?.invoke() }),
             textStyle = TextStyle(fontSize = 12.sp, color = BliskoColors.Ink),
             cursorBrush = SolidColor(BliskoColors.Forest),
             modifier = Modifier.weight(1f),

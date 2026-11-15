@@ -81,6 +81,8 @@
     <string name="picker_search_placeholder">Adres lub nazwa miejsca</string>
     <string name="picker_nearby">W pobliżu</string>
     <string name="picker_searching">Szukam…</string>
+    <string name="picker_geocode_not_found">Nie znaleziono adresu</string>
+    <string name="picker_geocode_selected">Wybrano: %1$s</string>
     <string name="picker_empty">Wybierz kategorię albo wpisz nazwę miejsca.</string>
     <string name="picker_open_until">Otwarte do %1$s</string>
     <string name="picker_open_always">Otwarte całą dobę</string>

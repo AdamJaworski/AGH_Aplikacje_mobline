@@ -46,6 +46,10 @@ data class TaskLocation(
     val category: PlaceCategory? = null,
     val placeId: Long? = null,
     val radiusMeters: Int = DEFAULT_RADIUS_METERS,
+    /** Adres i współrzędne punktu (geokodowanie) – trafią do rejestracji geofence'a. */
+    val address: String? = null,
+    val latitude: Double? = null,
+    val longitude: Double? = null,
 )
 
 /** Zamknięta lista kategorii (HLD §6), każda mapowana na tag OpenStreetMap. */
@@ -77,6 +81,8 @@ data class NearbyPlace(
     val distanceMeters: Int,
     val openUntil: LocalTime? = null,
     val alwaysOpen: Boolean = false,
+    val latitude: Double? = null,   // docelowo z Overpass
+    val longitude: Double? = null,
 )
 
 data class Note(
