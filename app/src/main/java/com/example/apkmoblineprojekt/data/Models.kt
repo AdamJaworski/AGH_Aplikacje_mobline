@@ -5,6 +5,24 @@ import com.example.apkmoblineprojekt.ui.theme.AccentBlue
 import com.example.apkmoblineprojekt.ui.theme.AccentCoral
 import com.example.apkmoblineprojekt.ui.theme.ForestGreen
 
+data class NearbyPlaceUi(
+    val index: Int,
+    val name: String,
+    val openHours: String,
+    val distance: String,
+    val lat: Double = 0.0,   // <- nowe (docelowo z Overpass)
+    val lng: Double = 0.0    // <- nowe
+)
+
+/** Miejsce przypisane do zadania – to trafi do rejestracji geofence'a. */
+data class SelectedLocation(
+    val name: String,
+    val address: String,
+    val lat: Double,
+    val lng: Double,
+    val radiusMeters: Int = 300
+)
+
 data class CalendarDayUi(
     val dayOfWeek: String,
     val dayNumber: String,
@@ -59,13 +77,6 @@ enum class PlaceCategory(val label: String) {
     OTHER("Inne")
 }
 
-data class NearbyPlaceUi(
-    val index: Int,
-    val name: String,
-    val openHours: String,
-    val distance: String
-)
-
 object MockData {
     val weekDays = listOf(
         CalendarDayUi("PON", "19", hasTasks = false),
@@ -101,9 +112,9 @@ object MockData {
     )
 
     val nearbyPlaces = listOf(
-        NearbyPlaceUi(1, "Dom i ogród", "Otwarte do 21:00", "220 m"),
-        NearbyPlaceUi(2, "Majster Market", "Otwarte do 20:00", "480 m"),
-        NearbyPlaceUi(3, "Centrum budowlane", "Otwarte do 22:00", "1,2 km")
+        NearbyPlaceUi(1, "Dom i ogród", "Otwarte do 21:00", "220 m", 52.1950, 21.0200),
+        NearbyPlaceUi(2, "Majster Market", "Otwarte do 20:00", "480 m", 52.1920, 21.0250),
+        NearbyPlaceUi(3, "Centrum budowlane", "Otwarte do 22:00", "1,2 km", 52.1990, 21.0100)
     )
 
     val notes = listOf(

@@ -1,5 +1,10 @@
 package com.example.apkmoblineprojekt.ui.navigation
-
+import androidx.compose.ui.platform.LocalContext
+import com.example.apkmoblineprojekt.data.SelectedLocation
+import com.example.apkmoblineprojekt.data.SubtaskUi
+import com.example.apkmoblineprojekt.location.GeocodedPlace
+import com.example.apkmoblineprojekt.location.GeocodingRepository
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -94,10 +99,21 @@ fun GeoPlanerApp(
 
     val showBottomBar = bottomNavDestinations.any { it.route == currentRoute }
 
-    // Przykładowy stan trzymany na poziomie nawigacji (w docelowej aplikacji w ViewModelach)
     var tasks by remember { mutableStateOf(MockData.todayTasks) }
     var isWeekView by remember { mutableStateOf(true) }
-    var selectedLocationName by remember { mutableStateOf("Sklep budowlany") }
+
+// Formularz zadania trzymany wyżej, żeby przeżył wejście w wybór miejsca
+    var taskTitle by remember { mutableStateOf("") }
+    var taskDescription by remember { mutableStateOf("") }
+    var subtasks by remember { mutableStateOf(MockData.defaultSubtasks) }
+    var selectedLocation by remember { mutableStateOf<SelectedLocation?>(null) }
+
+    fun resetTaskForm() {
+        taskTitle = ""
+        taskDescription = ""
+        subtasks = MockData.defaultSubtasks
+        selectedLocation = null
+    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -183,30 +199,32 @@ fun GeoPlanerApp(
             }
 
             composable(ScreenRoute.TaskEdit.route) {
-                var title by remember { mutableStateOf("") }
-                var description by remember { mutableStateOf("") }
-                var subtasks by remember { mutableStateOf(MockData.defaultSubtasks) }
-
                 TaskEditScreen(
-                    title = title,
-                    onTitleChange = { title = it },
-                    description = description,
-                    onDescriptionChange = { description = it },
+                    title = taskTitle,
+                    onTitleChange = { taskTitle = it },
+                    description = taskDescription,
+                    onDescriptionChange = { taskDescription = it },
                     dateText = "21 . 05 . 2025",
                     timeText = "18 : 00",
                     reminderText = "15 min wcześniej",
-                    locationTitle = selectedLocationName,
-                    locationSubtitle = "300 m od lokalizacji",
+                    locationTitle = selectedLocation?.name ?: "Wybierz miejsce",
+                    locationSubtitle = selectedLocation
+                        ?.let { "${it.address} · ${it.radiusMeters} m" }
+                        ?: "Dotknij, aby wskazać lokalizację",
                     subtasks = subtasks,
-                    onCancelClick = { navController.popBackStack() },
-                    onSaveClick = { navController.popBackStack() },
+                    onCancelClick = { resetTaskForm(); navController.popBackStack() },
+                    onSaveClick = {
+                        // selectedLocation?.lat / lng / radiusMeters -> GeofenceHelper (kolejny etap)
+                        resetTaskForm()
+                        navController.popBackStack()
+                    },
                     onAiSuggestClick = {},
                     onDateClick = {},
                     onTimeClick = {},
                     onReminderClick = {},
                     onLocationClick = { navController.navigate(ScreenRoute.PlacePicker.route) },
                     onAddSubtaskClick = {
-                        subtasks = subtasks + com.example.apkmoblineprojekt.data.SubtaskUi(
+                        subtasks = subtasks + SubtaskUi(
                             id = "s_${subtasks.size + 1}",
                             title = "Nowe podzadanie",
                             isDone = false
@@ -219,19 +237,60 @@ fun GeoPlanerApp(
             }
 
             composable(ScreenRoute.PlacePicker.route) {
+                val context = LocalContext.current.applicationContext
+                val geocoder = remember { GeocodingRepository(context) }
+                val scope = rememberCoroutineScope()
+
                 var searchQuery by remember { mutableStateOf("") }
                 var selectedCategory by remember { mutableStateOf(PlaceCategory.SHOP) }
+                var isSearching by remember { mutableStateOf(false) }
+                var searchError by remember { mutableStateOf<String?>(null) }
+                var resolved by remember { mutableStateOf<GeocodedPlace?>(null) }
 
                 PlacePickerScreen(
                     searchQuery = searchQuery,
-                    onSearchQueryChange = { searchQuery = it },
+                    onSearchQueryChange = {
+                        searchQuery = it
+                        searchError = null
+                        resolved = null                    // zmiana tekstu unieważnia wynik
+                    },
+                    onSearchSubmit = {
+                        val q = searchQuery.trim()
+                        if (!isSearching && q.isNotEmpty()) {
+                            scope.launch {
+                                isSearching = true
+                                val result = geocoder.geocode(q)
+                                isSearching = false
+                                resolved = result
+                                searchError = if (result == null) "Nie znaleziono adresu" else null
+                            }
+                        }
+                    },
+                    isSearching = isSearching,
+                    searchError = searchError,
+                    resolvedAddress = resolved?.address,
                     selectedCategory = selectedCategory,
                     onCategorySelect = { selectedCategory = it },
                     nearbyPlaces = MockData.nearbyPlaces,
                     onCloseClick = { navController.popBackStack() },
-                    onDoneClick = { navController.popBackStack() },
+                    onDoneClick = {
+                        resolved?.let {
+                            selectedLocation = SelectedLocation(
+                                name = searchQuery.trim(),
+                                address = it.address,
+                                lat = it.lat,
+                                lng = it.lng
+                            )
+                        }
+                        navController.popBackStack()
+                    },
                     onNearbyPlaceClick = { place ->
-                        selectedLocationName = place.name
+                        selectedLocation = SelectedLocation(
+                            name = place.name,
+                            address = place.name,
+                            lat = place.lat,
+                            lng = place.lng
+                        )
                         navController.popBackStack()
                     },
                     onMyLocationClick = {}

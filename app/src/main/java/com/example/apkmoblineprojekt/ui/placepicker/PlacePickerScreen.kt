@@ -1,4 +1,5 @@
 package com.example.apkmoblineprojekt.ui.placepicker
+import com.example.apkmoblineprojekt.ui.components.PlaceSearchField
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -38,6 +39,10 @@ import com.example.apkmoblineprojekt.ui.theme.*
 fun PlacePickerScreen(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
+    onSearchSubmit: () -> Unit,              // <- nowe
+    isSearching: Boolean,                    // <- nowe
+    searchError: String?,                    // <- nowe
+    resolvedAddress: String?,                // <- nowe
     selectedCategory: PlaceCategory,
     onCategorySelect: (PlaceCategory) -> Unit,
     nearbyPlaces: List<NearbyPlaceUi>,
@@ -89,10 +94,13 @@ fun PlacePickerScreen(
 
                 Button(
                     onClick = onDoneClick,
+                    enabled = resolvedAddress != null,
                     shape = RoundedCornerShape(14.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = ForestGreen,
-                        contentColor = Color.White
+                        contentColor = Color.White,
+                        disabledContainerColor = BorderLight, // <- nowe
+                        disabledContentColor = TextSecondary  // <- nowe
                     ),
                     contentPadding = PaddingValues(horizontal = 18.dp, vertical = 8.dp),
                     modifier = Modifier.height(38.dp)
@@ -110,8 +118,35 @@ fun PlacePickerScreen(
             AppSearchBar(
                 query = searchQuery,
                 onQueryChange = onSearchQueryChange,
-                placeholder = "Adres lub nazwa miejsca"
+                placeholder = "Adres lub nazwa miejsca",
+                onSearch = onSearchSubmit
             )
+
+            when {
+                isSearching -> {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    LinearProgressIndicator(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = ForestGreen
+                    )
+                }
+                searchError != null -> {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = searchError,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+                resolvedAddress != null -> {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Wybrano: $resolvedAddress",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextSecondary
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -344,7 +379,11 @@ private fun PlacePickerScreenPreview() {
             onCloseClick = {},
             onDoneClick = {},
             onNearbyPlaceClick = {},
-            onMyLocationClick = {}
+            onMyLocationClick = {},
+            onSearchSubmit = {},
+            isSearching = false,
+            searchError = null,
+            resolvedAddress = null
         )
     }
 }

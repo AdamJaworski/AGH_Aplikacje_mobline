@@ -1,5 +1,8 @@
 package com.example.apkmoblineprojekt.ui.components
 
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -100,7 +103,8 @@ fun AppSearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
     placeholder: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSearch: () -> Unit = {}                       // <- nowe
 ) {
     Surface(
         modifier = modifier
@@ -135,6 +139,8 @@ fun AppSearchBar(
                     value = query,
                     onValueChange = onQueryChange,
                     singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),   // <- nowe
+                    keyboardActions = KeyboardActions(onSearch = { onSearch() }),       // <- nowe
                     textStyle = MaterialTheme.typography.bodyLarge.copy(
                         color = MaterialTheme.colorScheme.onSurface
                     ),
