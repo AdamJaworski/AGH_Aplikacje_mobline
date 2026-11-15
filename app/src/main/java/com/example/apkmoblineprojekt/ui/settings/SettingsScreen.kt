@@ -61,6 +61,7 @@ import com.example.apkmoblineprojekt.ui.components.ChevronRight
 import com.example.apkmoblineprojekt.ui.components.Eyebrow
 import com.example.apkmoblineprojekt.ui.components.IconTile
 import com.example.apkmoblineprojekt.ui.components.ScreenHeader
+import com.example.apkmoblineprojekt.ui.components.rememberReminderPermissionRequest
 import com.example.apkmoblineprojekt.ui.theme.BliskoColors
 import com.example.apkmoblineprojekt.ui.theme.BliskoText
 import com.example.apkmoblineprojekt.ui.theme.BliskoTheme
@@ -78,6 +79,12 @@ fun SettingsRoute() {
     val calendarPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions(),
     ) { result -> viewModel.onCalendarPermissionResult(result.values.all { it }) }
+    val requestReminderPermissions = rememberReminderPermissionRequest(onFinished = viewModel::refreshPermissions)
+    val openSystemSettings = {
+        context.startActivity(
+            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null)),
+        )
+    }
 
     LifecycleResumeEffect(Unit) {
         viewModel.refreshPermissions()
@@ -86,11 +93,10 @@ fun SettingsRoute() {
 
     SettingsScreen(
         state = state,
-        // Prośby o uprawnienia w momencie potrzeby (HLD §8) – tutaj tylko skrót do ustawień systemu.
-        onOpenSystemSettings = {
-            context.startActivity(
-                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null)),
-            )
+        onOpenSystemSettings = openSystemSettings,
+        // Brakujące uprawnienia do przypomnień – dialogi systemowe; gdy wszystko jest, ustawienia systemu.
+        onReminderPermissionsClick = {
+            if (state.permissions?.remindersFullyWorking == true) openSystemSettings() else requestReminderPermissions()
         },
         onQuietHoursChange = viewModel::setQuietHours,
         onRadiusChange = viewModel::setDefaultRadius,
@@ -115,6 +121,7 @@ fun SettingsScreen(
     onRemindChange: (Int) -> Unit,
     onCalendarSyncChange: (Boolean) -> Unit = {},
     onCalendarSelect: (DeviceCalendarInfo) -> Unit = {},
+    onReminderPermissionsClick: () -> Unit = onOpenSystemSettings,
 ) {
     val settings = state.settings
     Column(
@@ -137,7 +144,7 @@ fun SettingsScreen(
                 label = stringResource(R.string.settings_notifications),
                 value = stringResource(if (notificationsOn) R.string.settings_enabled else R.string.settings_disabled),
                 valueColor = if (notificationsOn) BliskoColors.Good else BliskoColors.Coral,
-                onClick = onOpenSystemSettings,
+                onClick = onReminderPermissionsClick,
             )
             GroupDivider()
             val location = state.permissions?.location ?: LocationAccess.NONE
@@ -152,7 +159,7 @@ fun SettingsScreen(
                     },
                 ),
                 valueColor = if (location == LocationAccess.ALWAYS) BliskoColors.Good else BliskoColors.Coral,
-                onClick = onOpenSystemSettings,
+                onClick = onReminderPermissionsClick,
             )
             GroupDivider()
             val calendarOn = state.permissions?.calendar == true

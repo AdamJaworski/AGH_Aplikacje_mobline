@@ -75,6 +75,7 @@ import com.example.apkmoblineprojekt.R
 import com.example.apkmoblineprojekt.data.model.LocationType
 import com.example.apkmoblineprojekt.data.model.PlaceCategory
 import com.example.apkmoblineprojekt.data.model.TaskLocation
+import com.example.apkmoblineprojekt.ui.components.rememberReminderPermissionRequest
 import com.example.apkmoblineprojekt.ui.components.BliskoCard
 import com.example.apkmoblineprojekt.ui.components.ChevronRight
 import com.example.apkmoblineprojekt.ui.components.FieldLabel
@@ -103,6 +104,8 @@ fun TaskEditorRoute(onClose: () -> Unit) {
     }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var placePickerOpen by rememberSaveable { mutableStateOf(false) }
+    // HLD §8: o lokalizację i powiadomienia pytamy przy pierwszym zadaniu z miejscem.
+    val requestReminderPermissions = rememberReminderPermissionRequest()
 
     LaunchedEffect(state.finished) {
         if (state.finished) onClose()
@@ -136,6 +139,7 @@ fun TaskEditorRoute(onClose: () -> Unit) {
             onConfirm = {
                 viewModel.onLocationChange(it)
                 placePickerOpen = false
+                requestReminderPermissions()
             },
         )
     }

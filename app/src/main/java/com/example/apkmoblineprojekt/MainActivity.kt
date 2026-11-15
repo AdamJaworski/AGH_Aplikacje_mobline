@@ -27,7 +27,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Uprawnienia do kalendarza mogły się zmienić w ustawieniach systemu.
-        (application as BliskoApplication).container.deviceCalendar.refresh()
+        // Uprawnienia do kalendarza i lokalizacji mogły się zmienić (dialog albo ustawienia systemu).
+        val container = (application as BliskoApplication).container
+        container.deviceCalendar.refresh()
+        container.geofenceHelper.sync()
     }
 }

@@ -168,4 +168,18 @@
     <string name="cd_pinned">Przypięta</string>
     <string name="cd_pin_note">Przypnij</string>
     <string name="cd_unpin_note">Odepnij</string>
+
+    <!-- Powiadomienia „W pobliżu” (HLD §8) -->
+    <string name="notif_channel_nearby">W pobliżu</string>
+    <string name="notif_channel_nearby_desc">Przypomnienia, gdy jesteś blisko miejsca z zadania</string>
+    <string name="notif_nearby_title">Jesteś blisko: %1$s</string>
+    <string name="notif_action_done">Zrobione</string>
+    <string name="notif_action_later">Później</string>
+    <string name="notif_action_navigate">Nawiguj</string>
+
+    <!-- Uprawnienie do lokalizacji w tle -->
+    <string name="background_location_title">Lokalizacja „Zawsze”</string>
+    <string name="background_location_body">Żeby przypomnieć o zadaniu, gdy będziesz w pobliżu, Blisko potrzebuje dostępu do lokalizacji także w tle. Na następnym ekranie wybierz „Zezwalaj zawsze”. Twoja pozycja nie jest zapisywana ani nigdzie wysyłana – aplikacja korzysta tylko z systemowego geofencingu.</string>
+    <string name="background_location_allow">Przejdź do ustawień</string>
+    <string name="background_location_skip">Nie teraz</string>
 </resources>
