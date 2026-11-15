@@ -17,6 +17,9 @@ import com.example.apkmoblineprojekt.data.SettingsRepository
 import com.example.apkmoblineprojekt.data.SharedPrefsDeletedEventStore
 import com.example.apkmoblineprojekt.data.TaskRepository
 import com.example.apkmoblineprojekt.location.GeocodingRepository
+import com.example.apkmoblineprojekt.location.GeofenceHelper
+import com.example.apkmoblineprojekt.location.GeofenceStore
+import com.example.apkmoblineprojekt.location.GeofencingTaskRepository
 import com.example.apkmoblineprojekt.system.AndroidDeviceCalendar
 import com.example.apkmoblineprojekt.system.AndroidPermissionChecker
 import com.example.apkmoblineprojekt.system.DeviceCalendar
@@ -34,23 +37,32 @@ import kotlinx.coroutines.SupervisorJob
  * - AI: reguły na słowach kluczowych → AiClient (LLM).
  *
  * Kalendarz telefonu (CalendarContract) jest już prawdziwy: [taskRepository] to dekorator,
- * który synchronizuje zadania z wydarzeniami w telefonie.
+ * który synchronizuje zadania z wydarzeniami w telefonie, a na zewnątrz – dekorator
+ * rejestrujący strefy geofence dla zadań z miejscem (HLD §5).
  */
 class AppContainer(context: Context) {
     private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     val settingsRepository: SettingsRepository = DataStoreSettingsRepository(context.applicationContext)
     val deviceCalendar: DeviceCalendar = AndroidDeviceCalendar(context.applicationContext)
-    val taskRepository: TaskRepository = CalendarSyncingTaskRepository(
-        local = InMemoryTaskRepository(SampleData.tasks()),
-        deviceCalendar = deviceCalendar,
-        settingsRepository = settingsRepository,
-        deletedEvents = SharedPrefsDeletedEventStore(context.applicationContext),
-    ).also { it.start(appScope) }
-    val noteRepository: NoteRepository = InMemoryNoteRepository(SampleData.notes())
     val placeRepository: PlaceRepository = InMemoryPlaceRepository(SampleData.places())
-    val placeSearchRepository: PlaceSearchRepository = FakePlaceSearchRepository()
     val geocodingRepository = GeocodingRepository(context.applicationContext)
+    val geofenceStore = GeofenceStore(context.applicationContext)
+    val geofenceHelper = GeofenceHelper(context.applicationContext, geofenceStore)
+    val taskRepository: TaskRepository = GeofencingTaskRepository(
+        delegate = CalendarSyncingTaskRepository(
+            local = InMemoryTaskRepository(SampleData.tasks()),
+            deviceCalendar = deviceCalendar,
+            settingsRepository = settingsRepository,
+            deletedEvents = SharedPrefsDeletedEventStore(context.applicationContext),
+        ).also { it.start(appScope) },
+        placeRepository = placeRepository,
+        geocodingRepository = geocodingRepository,
+        store = geofenceStore,
+        helper = geofenceHelper,
+    )
+    val noteRepository: NoteRepository = InMemoryNoteRepository(SampleData.notes())
+    val placeSearchRepository: PlaceSearchRepository = FakePlaceSearchRepository()
     val aiAssistant: AiAssistant = FakeAiAssistant()
     val permissionChecker: PermissionChecker = AndroidPermissionChecker(context.applicationContext)
 }
